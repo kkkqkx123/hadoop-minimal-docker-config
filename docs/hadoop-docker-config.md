@@ -1,6 +1,4 @@
-下面给你一套可直接跑起来的最小可用方案，用 **Docker Compose 一键起 1 个 master（NameNode + ResourceManager + HistoryServer）+ 2 个 worker（DataNode + NodeManager）** 的 Hadoop 3.x 集群。包含完整配置文件、镜像 Dockerfile、启动脚本与使用说明。
-
-> 说明：此配置面向学习/开发环境，采用 root 用户和内置 SSH 免密，便于开箱即用；生产环境请改为专用用户与更严格的安全策略。
+说明：此配置面向学习/开发环境，采用 root 用户和内置 SSH 免密，便于开箱即用；生产环境请改为专用用户与更严格的安全策略。
 
 ---
 

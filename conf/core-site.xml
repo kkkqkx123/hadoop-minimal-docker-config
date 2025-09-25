@@ -35,9 +35,31 @@
     <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
   </property>
   
-  <!-- 缓冲区大小优化 -->
+  <!-- 文件系统缓冲区大小优化 -->
   <property>
     <name>io.file.buffer.size</name>
     <value>4096</value>
+  </property>
+
+  <!-- TCP网络优化 -->
+  <property>
+    <name>ipc.server.listen.queue.size</name>
+    <value>128</value>
+  </property>
+  <property>
+    <name>ipc.client.connect.max.retries</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>ipc.client.connect.retry.interval</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>ipc.client.tcpnodelay</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>ipc.server.tcpnodelay</name>
+    <value>true</value>
   </property>
 </configuration>

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   master:
-    build: .
+    image: hadoop:multistage
     container_name: master
     hostname: master
     deploy:
@@ -15,7 +15,6 @@ services:
           cpus: '0.5'
     environment:
       - HADOOP_ROLE=master
-      # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
       - HDFS_NAMENODE_USER=root
       - HDFS_DATANODE_USER=root
       - HDFS_SECONDARYNAMENODE_USER=root
@@ -23,12 +22,12 @@ services:
       - YARN_RESOURCEMANAGER_USER=root
       - YARN_NODEMANAGER_USER=root
     ports:
-      - "9870:9870"   # NameNode Web UI
-      - "8088:8088"   # ResourceManager Web UI
-      - "19888:19888" # JobHistory Web UI
-      - "10020:10020" # JobHistory RPC
-      - "8020:8020"   # HDFS NN RPC (fs.defaultFS)
-      - "22:22"       # SSH（可选）
+      - "9870:9870"
+      - "8088:8088"
+      - "19888:19888"
+      - "10020:10020"
+      - "8020:8020"
+      - "22:22"
     volumes:
       - namenode:/hadoop/dfs/namenode
       - yarnlogs:/tmp/hadoop-yarn
@@ -39,7 +38,7 @@ services:
       - hadoop
 
   worker1:
-    build: .
+    image: hadoop:multistage
     container_name: worker1
     hostname: worker1
     deploy:
@@ -55,15 +54,15 @@ services:
       - HDFS_DATANODE_USER=root
       - YARN_NODEMANAGER_USER=root
     ports:
-      - "9864:9864"   # DataNode Web UI（worker1）
-      - "8042:8042"   # NodeManager Web UI（worker1）
+      - "9864:9864"
+      - "8042:8042"
     volumes:
       - datanode1:/hadoop/dfs/datanode
     networks:
       - hadoop
 
   worker2:
-    build: .
+    image: hadoop:multistage
     container_name: worker2
     hostname: worker2
     deploy:
@@ -79,8 +78,8 @@ services:
       - HDFS_DATANODE_USER=root
       - YARN_NODEMANAGER_USER=root
     ports:
-      - "9865:9864"   # DataNode Web UI（worker2 映射到宿主 9865）
-      - "8043:8042"   # NodeManager Web UI（worker2 映射到宿主 8043）
+      - "9865:9864"
+      - "8043:8042"
     volumes:
       - datanode2:/hadoop/dfs/datanode
     networks:
@@ -96,7 +95,7 @@ volumes:
   datanode1:
     driver: local
     driver_opts:
-      type: none  
+      type: none
       o: bind
       device: /tmp/hadoop-volumes/datanode1
   datanode2:
