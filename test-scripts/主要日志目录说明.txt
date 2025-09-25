@@ -1,0 +1,3 @@
+worker节点日志：
+worker1:
+/opt/hadoop/logs

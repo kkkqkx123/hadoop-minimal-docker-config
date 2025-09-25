@@ -7,6 +7,8 @@ docker build -f Dockerfile.alpine -t hadoop:alpine .
 docker-compose -f docker-compose-alpine.yml up -d
 
 # standard
+# 可以直接跳到下一步，但可能超时
+docker pull docker.io/library/openjdk:11-slim
 docker build -t hadoop:optimized .
 docker-compose up -d
 
