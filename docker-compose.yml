@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   master:
-    build: .
+    image: hadoop:optimized
     container_name: master
     hostname: master
     deploy:
@@ -40,7 +40,7 @@ services:
       - hadoop
 
   worker1:
-    build: .
+    image: hadoop:optimized
     container_name: worker1
     hostname: worker1
     deploy:
@@ -65,7 +65,7 @@ services:
       - hadoop
 
   worker2:
-    build: .
+    image: hadoop:optimized
     container_name: worker2
     hostname: worker2
     deploy:

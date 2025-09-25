@@ -1,10 +1,11 @@
 cd /home/docker-compose/hadoop-minimal
+# 或wsl -e bash -c cd /home/docker-compose/hadoop
 
-# alpine
+# alpine(已弃用)
 # 可以直接跳到下一步，但可能超时
-docker pull alpine:3.18 
-docker build -f Dockerfile.alpine -t hadoop:alpine .
-docker-compose -f docker-compose-alpine.yml up -d
+# docker pull alpine:3.18 
+# docker build -f Dockerfile.alpine -t hadoop:alpine .
+# docker-compose -f docker-compose-alpine.yml up -d
 
 # standard
 # 可以直接跳到下一步，但可能超时
