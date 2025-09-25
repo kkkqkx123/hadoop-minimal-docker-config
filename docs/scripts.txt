@@ -10,8 +10,8 @@ cd /home/docker-compose/hadoop-minimal
 # standard
 # 可以直接跳到下一步，但可能超时
 docker pull docker.io/library/openjdk:11-slim
-docker build -t hadoop:optimized .
-docker-compose up -d
+wsl -e bash -c "cd /home/docker-compose/hadoop && docker build -t hadoop:optimized ."
+wsl -e bash -c "cd /home/docker-compose/hadoop && docker-compose up -d"
 
 安装失败：
 docker-compose -f docker-compose-alpine.yml down -v 

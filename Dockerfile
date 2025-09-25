@@ -32,6 +32,11 @@ RUN mkdir -p /var/run/sshd /root/.ssh && \
     sed -ri 's/#?PermitRootLogin .*/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config && \
     sed -ri 's/#?PasswordAuthentication .*/PasswordAuthentication no/g' /etc/ssh/sshd_config
 
+# 安装dos2unix用于文件格式转换
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends dos2unix && \
+    rm -rf /var/lib/apt/lists/*
+
 # 拷贝配置与脚本
 COPY conf/core-site.xml ${HADOOP_HOME}/etc/hadoop/core-site.xml
 COPY conf/hdfs-site.xml ${HADOOP_HOME}/etc/hadoop/hdfs-site.xml
@@ -40,8 +45,11 @@ COPY conf/mapred-site.xml ${HADOOP_HOME}/etc/hadoop/mapred-site.xml
 COPY conf/hadoop-env.sh ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 COPY conf/workers ${HADOOP_HOME}/etc/hadoop/workers
 
+# 转换配置文件为Unix格式
+RUN dos2unix ${HADOOP_HOME}/etc/hadoop/*.xml ${HADOOP_HOME}/etc/hadoop/*.sh ${HADOOP_HOME}/etc/hadoop/workers
+
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && dos2unix /usr/local/bin/entrypoint.sh
 
 # 暴露常用端口（compose 里会映射）
 EXPOSE 22 8020 9870 9864 8088 8042 19888 10020

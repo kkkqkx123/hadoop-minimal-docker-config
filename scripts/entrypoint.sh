@@ -5,7 +5,8 @@ set -euo pipefail
 export SHELL=/bin/bash
 
 # 显式设置JAVA_HOME
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+export JAVA_HOME=/usr/local/openjdk-11
+# alpine中使用export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 
 # 设置Hadoop配置目录
 export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
