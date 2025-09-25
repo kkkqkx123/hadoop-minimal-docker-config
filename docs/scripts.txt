@@ -1,0 +1,9 @@
+cd /home/docker-compose/hadoop-minimal
+
+# alpine
+docker build -f Dockerfile.alpine -t hadoop:alpine .
+docker-compose -f docker-compose-alpine.yml up -d
+
+# standard
+docker build -t hadoop:optimized .
+docker-compose up -d
