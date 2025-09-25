@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# 显式设置JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+
 # 启动 SSHD（并生成主机 host keys）
 /usr/sbin/sshd
 
@@ -28,10 +31,24 @@ if [[ "$ROLE" == "master" ]]; then
   fi
 
   echo "[entrypoint] Starting HDFS..."
-  "${HADOOP_HOME}/sbin/start-dfs.sh"
+  # 手动启动各个服务，绕过start-dfs.sh的兼容性问题
+  echo "[entrypoint] Starting NameNode..."
+  "${HADOOP_HOME}/bin/hdfs" --daemon start namenode
+  
+  echo "[entrypoint] Starting DataNode on workers..."
+  ssh worker1 "${HADOOP_HOME}/bin/hdfs" --daemon start datanode
+  ssh worker2 "${HADOOP_HOME}/bin/hdfs" --daemon start datanode
+  
+  echo "[entrypoint] Starting SecondaryNameNode..."
+  "${HADOOP_HOME}/bin/hdfs" --daemon start secondarynamenode
 
   echo "[entrypoint] Starting YARN..."
-  "${HADOOP_HOME}/sbin/start-yarn.sh"
+  echo "[entrypoint] Starting ResourceManager..."
+  "${HADOOP_HOME}/bin/yarn" --daemon start resourcemanager
+  
+  echo "[entrypoint] Starting NodeManager on workers..."
+  ssh worker1 "${HADOOP_HOME}/bin/yarn" --daemon start nodemanager
+  ssh worker2 "${HADOOP_HOME}/bin/yarn" --daemon start nodemanager
 
   echo "[entrypoint] Starting MR JobHistory..."
   "${HADOOP_HOME}/bin/mapred" --daemon start historyserver

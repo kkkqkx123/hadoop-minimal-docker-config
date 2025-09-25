@@ -7,3 +7,12 @@ docker-compose -f docker-compose-alpine.yml up -d
 # standard
 docker build -t hadoop:optimized .
 docker-compose up -d
+
+安装失败：
+在docker desktop中删除容器
+# 删除挂载的目录
+docker-compose -f docker-compose-alpine.yml down -v
+# 重新构建(docekr提供了缓存，不需要重新下载依赖的镜像)
+docker build -f Dockerfile.alpine -t hadoop:alpine .
+# 重新运行
+docker-compose -f docker-compose-alpine.yml down -v
