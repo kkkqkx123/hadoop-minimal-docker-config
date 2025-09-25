@@ -23,6 +23,7 @@ services:
       - YARN_NODEMANAGER_USER=root
       - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
       - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      - SHELL=/bin/bash
     ports:
       - "9870:9870"
       - "8088:8088"
@@ -56,6 +57,7 @@ services:
       - HDFS_DATANODE_USER=root
       - YARN_NODEMANAGER_USER=root
       - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+      - SHELL=/bin/bash
     ports:
       - "9864:9864"
       - "8042:8042"
@@ -81,6 +83,7 @@ services:
       - HDFS_DATANODE_USER=root
       - YARN_NODEMANAGER_USER=root
       - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+      - SHELL=/bin/bash
     ports:
       - "9865:9864"
       - "8043:8042"

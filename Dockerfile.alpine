@@ -51,7 +51,8 @@ COPY conf/hadoop-env-alpine.sh ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 COPY conf/workers ${HADOOP_HOME}/etc/hadoop/workers
 
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY scripts/test-alpine-bash.sh /usr/local/bin/test-alpine-bash.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/test-alpine-bash.sh
 
 # 暴露端口
 EXPOSE 22 8020 9870 9864 8088 8042 19888 10020
