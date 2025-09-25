@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- HDFS 入口（与 compose 中 master 的 8020 端口一致） -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://master:8020</value>
+  </property>
+
+  <!-- Hadoop 运行时临时目录 -->
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/tmp/hadoop-${user.name}</value>
+  </property>
+
+  <!-- 允许跨主机主机名解析（docker 内部 DNS 已处理，一般不必改） -->
+  <property>
+    <name>ipc.client.fallback-to-simple-auth-allowed</name>
+    <value>true</value>
+  </property>
+  
+  <!-- IPC连接优化 -->
+  <property>
+    <name>ipc.server.handler.queue.size</name>
+    <value>10</value>
+  </property>
+  
+  <!-- 文件系统优化 -->
+  <property>
+    <name>fs.file.impl</name>
+    <value>org.apache.hadoop.fs.LocalFileSystem</value>
+  </property>
+  
+  <property>
+    <name>fs.hdfs.impl</name>
+    <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
+  </property>
+  
+  <!-- 缓冲区大小优化 -->
+  <property>
+    <name>io.file.buffer.size</name>
+    <value>4096</value>
+  </property>
+</configuration>

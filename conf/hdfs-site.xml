@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- NameNode 与 DataNode 数据目录 -->
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file:///hadoop/dfs/namenode</value>
+  </property>
+
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>file:///hadoop/dfs/datanode</value>
+  </property>
+
+  <!-- 两个 worker，副本系数设为 2 -->
+  <property>
+    <name>dfs.replication</name>
+    <value>2</value>
+  </property>
+
+  <!-- demo 环境禁用本地文件权限检查，减少权限问题 -->
+  <property>
+    <name>dfs.permissions.enabled</name>
+    <value>false</value>
+  </property>
+  
+  <!-- NameNode内存优化 -->
+  <property>
+    <name>dfs.namenode.handler.count</name>
+    <value>10</value>
+  </property>
+  
+  <!-- DataNode内存优化 -->
+  <property>
+    <name>dfs.datanode.handler.count</name>
+    <value>3</value>
+  </property>
+  
+  <!-- 减少块报告间隔，节省资源 -->
+  <property>
+    <name>dfs.blockreport.intervalMsec</name>
+    <value>300000</value>
+  </property>
+  
+  <!-- 减少心跳间隔 -->
+  <property>
+    <name>dfs.heartbeat.interval</name>
+    <value>30</value>
+  </property>
+  
+  <!-- 优化文件系统缓存 -->
+  <property>
+    <name>dfs.datanode.drop.cache.behind.reads</name>
+    <value>true</value>
+  </property>
+  
+  <property>
+    <name>dfs.datanode.drop.cache.behind.writes</name>
+    <value>true</value>
+  </property>
+  
+  <!-- 减少小文件内存占用 -->
+  <property>
+    <name>dfs.block.size</name>
+    <value>134217728</value>
+  </property>
+</configuration>

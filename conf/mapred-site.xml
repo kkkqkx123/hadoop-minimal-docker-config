@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>master:10020</value>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>master:19888</value>
+  </property>
+  
+  <!-- MapReduce内存优化 -->
+  <property>
+    <name>mapreduce.map.memory.mb</name>
+    <value>512</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.reduce.memory.mb</name>
+    <value>512</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.map.java.opts</name>
+    <value>-Xmx384m</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.reduce.java.opts</name>
+    <value>-Xmx384m</value>
+  </property>
+  
+  <!-- 任务并发度优化 -->
+  <property>
+    <name>mapreduce.job.maps</name>
+    <value>2</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.job.reduces</name>
+    <value>1</value>
+  </property>
+</configuration>
