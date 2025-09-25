@@ -1,5 +1,6 @@
 # OpenJDK 11 slim 版本的JAVA_HOME
 export JAVA_HOME=/usr/local/openjdk-11
+export SHELL=/bin/bash
 
 # JVM性能优化参数
 export HADOOP_HEAPSIZE_MAX=512
