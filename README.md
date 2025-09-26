@@ -39,7 +39,7 @@ docker-compose ps
 |------|----------|----------|----------|
 | 标准优化版 | ~600MB | 5GB | 通用场景，平衡性能和资源 |
 | 多阶段构建版 | ~580MB | 5GB | 生产环境，最小化镜像大小 |
-| Alpine 轻量版 | ~400MB | 3.5GB | 开发测试，资源受限环境 |
+| ~~Alpine 轻量版~~ | ~400MB | 3.5GB | ~~开发测试，资源受限环境~~ ⚠️ **已弃用，存在兼容性问题** |
 
 ## 🔧 部署方案详情
 
@@ -73,7 +73,7 @@ docker-compose -f docker-compose-multistage.yml up -d
 - 构建过程优化
 - 保持功能完整性
 
-### 方案三：Alpine 轻量版
+### 方案三：Alpine 轻量版 ⚠️ 已弃用
 
 ```bash
 # 构建镜像
@@ -83,10 +83,24 @@ docker build -f Dockerfile.alpine -t hadoop:alpine .
 docker-compose -f docker-compose-alpine.yml up -d
 ```
 
-**特点：**
-- 基于 Alpine Linux，镜像最小
-- 内存占用最低
-- 适合开发测试环境
+**⚠️ 重要提醒：Alpine 版本存在兼容性问题，已弃用**
+
+**已知问题：**
+- DataNode JVM 崩溃（SIGSEGV 错误）
+- Web UI 端口无法访问
+- HDFS 文件操作失败
+- MapReduce 作业执行异常
+
+**问题原因：**
+Alpine Linux 使用 musl libc 而非 glibc，与 Hadoop 本地库存在兼容性冲突，特别是 ShortCircuitRegistry 组件会导致段错误。
+
+**解决方案：**
+请使用标准优化版或多阶段构建版替代。
+
+**历史特点：**
+- 基于 Alpine Linux，镜像最小（~400MB）
+- 内存占用最低（3.5GB）
+- 仅适合资源极度受限环境（不推荐）
 
 ## 📊 集群架构
 
@@ -182,7 +196,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar p
 
 ### 1. 内存不足
 - 调整 `docker-compose.yml` 中的内存限制
-- 使用 Alpine 轻量版减少内存占用
+- ~~使用 Alpine 轻量版减少内存占用~~ ⚠️ Alpine 版本已弃用，请使用标准优化版或多阶段构建版
 
 ### 2. 端口冲突
 - 检查端口占用情况
@@ -195,7 +209,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar p
 ## 🎯 最佳实践
 
 1. **生产环境**：使用多阶段构建版，平衡性能和资源
-2. **开发测试**：使用 Alpine 轻量版，节省资源
+2. ~~**开发测试**：使用 Alpine 轻量版，节省资源~~ ⚠️ Alpine 版本已弃用，推荐使用标准优化版
 3. **学习研究**：使用标准优化版，功能完整
 4. **资源监控**：定期查看容器资源使用情况
 5. **日志管理**：及时清理过期日志文件
@@ -212,7 +226,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar p
 
 - **[标准优化版构建原理](docs/standard-build-principle.md)** - 单阶段构建的完整流程和优化策略
 - **[多阶段构建版原理](docs/multistage-build-principle.md)** - Docker 多阶段构建技术和镜像优化
-- **[Alpine 轻量版构建原理](docs/alpine-build-principle.md)** - 基于 Alpine Linux 的极致轻量化方案
+- ~~**[Alpine 轻量版构建原理](docs/alpine-build-principle.md)** - 基于 Alpine Linux 的极致轻量化方案~~ ⚠️ **已弃用：存在兼容性问题**
 - **[Docker Compose 部署原理](docs/docker-compose-principle.md)** - 多容器编排和服务管理
 - **[构建方案对比总结](docs/build-comparison-summary.md)** - 三种方案的详细对比分析
 
