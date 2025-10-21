@@ -36,6 +36,17 @@
     <value>-Xmx384m</value>
   </property>
   
+  <!-- Application Master资源配置 -->
+  <property>
+    <name>yarn.app.mapreduce.am.resource.mb</name>
+    <value>768</value>
+  </property>
+  
+  <property>
+    <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
+    <value>1</value>
+  </property>
+  
   <!-- 任务并发度优化 -->
   <property>
     <name>mapreduce.job.maps</name>

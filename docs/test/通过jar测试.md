@@ -1,0 +1,1 @@
+wsl -e bash -cl "cd /home/docker-compose/hadoop && docker-compose exec master hadoop jar /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar pi 2 10" 

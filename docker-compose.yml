@@ -33,6 +33,7 @@ services:
     volumes:
       - namenode:/hadoop/dfs/namenode
       - yarnlogs:/tmp/hadoop-yarn
+      - ./conf:/opt/hadoop/etc/hadoop:ro
     depends_on:
       - worker1
       - worker2
@@ -61,6 +62,7 @@ services:
       - "8042:8042"   # NodeManager Web UI（worker1）
     volumes:
       - datanode1:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
 
@@ -85,6 +87,7 @@ services:
       - "8043:8042"   # NodeManager Web UI（worker2 映射到宿主 8043）
     volumes:
       - datanode2:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
 
