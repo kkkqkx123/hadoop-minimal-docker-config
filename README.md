@@ -237,3 +237,5 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar p
 ## 📄 许可证
 
 MIT License - 详见 [LICENSE](LICENSE) 文件
+
+WSL_TARGET=/home/docker-compose/hadoop
