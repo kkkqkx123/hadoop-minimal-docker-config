@@ -148,3 +148,15 @@ docker-compose exec master hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop
 | 提高 YARN 上限 | 修改 `yarn-site.xml` + 容器内存 | 生产/高负载 |
 
 你当前场景 **选降低任务内存即可**，无需扩容容器。
+
+
+根据context7的验证，我发现了配置问题的根本原因：
+
+## 问题分析
+1. Application Master内存配置冲突 ：在默认的 mapred-default.xml 中， yarn.app.mapreduce.am.resource.mb 的默认值是 1536MB ，这正是我们在错误日志中看到的内存请求值。
+2. 配置优先级问题 ：虽然我们在 mapred-site.xml 中设置了 mapreduce.map.memory.mb=512 ，但YARN Application Master的内存请求是独立的配置。
+3. Ubertask优化条件 ：文档中提到，要启用ubertask优化（单JVM内顺序执行小任务），需要满足：
+   
+   - yarn.app.mapreduce.am.resource.mb 必须大于 mapreduce.map.memory.mb 和 mapreduce.reduce.memory.mb
+   - 我们的配置中AM内存（1536MB）确实大于512MB，但YARN调度器的最大分配限制是1024MB，导致冲突
+

@@ -61,4 +61,10 @@
     <name>yarn.resourcemanager.scheduler.monitor.policies</name>
     <value>org.apache.hadoop.yarn.server.resourcemanager.monitor.capacity.ProportionalCapacityPreemptionPolicy</value>
   </property>
+  
+  <!-- 指定使用容量调度器 -->
+  <property>
+    <name>yarn.resourcemanager.scheduler.class</name>
+    <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+  </property>
 </configuration>
