@@ -1,0 +1,4 @@
+- NameNode Web UI: http://localhost:9870
+- ResourceManager Web UI: http://localhost:8088
+- DataNode Web UI: worker1(9864), worker2(9865)
+- NodeManager Web UI: worker1(8042), worker2(8043)

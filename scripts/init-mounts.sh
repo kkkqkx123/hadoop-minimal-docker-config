@@ -5,7 +5,7 @@
 
 set -e
 
-# 定义挂载目录路径
+# 定义挂载目录路径（当前使用Docker管理的匿名卷，这些目录仅用于兼容性检查）
 MOUNT_DIRS=(
     "/tmp/hadoop-volumes/namenode"
     "/tmp/hadoop-volumes/datanode1"
@@ -70,6 +70,31 @@ show_directory_status() {
     fi
 }
 
+# 函数：检查Docker卷状态
+check_docker_volumes() {
+    echo -e "${YELLOW}📦${NC} 检查Docker卷状态..."
+    echo "------------------------"
+    
+    local volumes=("hadoop_namenode" "hadoop_datanode1" "hadoop_datanode2" "hadoop_yarnlogs")
+    local all_exist=true
+    
+    for volume in "${volumes[@]}"; do
+        if docker volume inspect "$volume" >/dev/null 2>&1; then
+            echo -e "${GREEN}✓${NC} Docker卷存在: $volume"
+        else
+            echo -e "${RED}✗${NC} Docker卷不存在: $volume"
+            all_exist=false
+        fi
+    done
+    
+    echo
+    if $all_exist; then
+        echo -e "${GREEN}✓${NC} 所有Docker卷都已存在！"
+    else
+        echo -e "${YELLOW}⚠${NC} 部分Docker卷不存在，将在启动时自动创建"
+    fi
+}
+
 # 主函数
 main() {
     echo "=========================================="
@@ -95,6 +120,10 @@ main() {
                 fi
             done
             echo
+            
+            # 检查Docker卷状态
+            check_docker_volumes
+            
             if $all_exist; then
                 echo -e "${GREEN}✓${NC} 所有挂载目录都已存在！"
                 exit 0
@@ -108,6 +137,9 @@ main() {
         "init"|"-i"|"--init")
             echo "模式：初始化目录结构"
             echo "------------------------"
+            echo -e "${YELLOW}⚠${NC}  注意：当前配置使用Docker管理的匿名卷"
+            echo -e "${YELLOW}⚠${NC}  这些本地目录仅用于兼容性检查，实际数据存储在Docker卷中"
+            echo
             success_count=0
             total_count=${#MOUNT_DIRS[@]}
             
@@ -132,6 +164,8 @@ main() {
                 echo
                 echo "现在可以安全地启动 Hadoop Docker 集群："
                 echo -e "${YELLOW}  docker-compose up -d${NC}"
+                echo
+                echo "注意：实际数据存储在Docker管理的匿名卷中"
             else
                 echo -e "${RED}✗${NC} 目录初始化失败！ ($success_count/$total_count)"
                 exit 1

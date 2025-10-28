@@ -12,7 +12,7 @@ param(
 # WSL目标路径
 $WSL_TARGET = "/home/docker-compose/hadoop"
 
-# 挂载目录列表
+# 挂载目录列表（当前使用Docker管理的匿名卷，这些目录仅用于兼容性检查）
 $MountDirs = @(
     "/tmp/hadoop-volumes/namenode",
     "/tmp/hadoop-volumes/datanode1", 
@@ -103,6 +103,42 @@ Hadoop Docker 集群所需的挂载目录:
 "@
 }
 
+# 函数：检查Docker卷状态
+function Test-DockerVolume {
+    param([string]$VolumeName)
+    try {
+        docker volume inspect $VolumeName 2>$null | Out-Null
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+# 函数：检查Docker卷状态
+function Invoke-CheckDockerVolumes {
+    Write-Host "${Yellow}📦${Reset} 检查Docker卷状态..."
+    Write-Host "------------------------"
+    
+    $volumes = @("hadoop_namenode", "hadoop_datanode1", "hadoop_datanode2", "hadoop_yarnlogs")
+    $allExist = $true
+    
+    foreach ($volume in $volumes) {
+        if (Test-DockerVolume $volume) {
+            Write-Host "${Green}✓${Reset} Docker卷存在: $volume"
+        } else {
+            Write-Host "${Red}✗${Reset} Docker卷不存在: $volume"
+            $allExist = $false
+        }
+    }
+    
+    Write-Host
+    if ($allExist) {
+        Write-Host "${Green}✓${Reset} 所有Docker卷都已存在！"
+    } else {
+        Write-Host "${Yellow}⚠${Reset} 部分Docker卷不存在，将在启动时自动创建"
+    }
+}
+
 # 函数：检查模式
 function Invoke-CheckMode {
     Write-Host "模式：检查目录状态"
@@ -122,6 +158,10 @@ function Invoke-CheckMode {
     }
     
     Write-Host
+    
+    # 检查Docker卷状态
+    Invoke-CheckDockerVolumes
+    
     if ($allExist) {
         Write-Host "${Green}✓${Reset} 所有挂载目录都已存在！"
         return 0
@@ -136,6 +176,9 @@ function Invoke-CheckMode {
 function Invoke-InitMode {
     Write-Host "模式：初始化目录结构"
     Write-Host "------------------------"
+    Write-Host "${Yellow}⚠${Reset}  注意：当前配置使用Docker管理的匿名卷"
+    Write-Host "${Yellow}⚠${Reset}  这些本地目录仅用于兼容性检查，实际数据存储在Docker卷中"
+    Write-Host
     
     $successCount = 0
     $totalCount = $MountDirs.Count
@@ -161,6 +204,8 @@ function Invoke-InitMode {
         Write-Host
         Write-Host "现在可以安全地启动 Hadoop Docker 集群："
         Write-Host "${Yellow}  wsl -e bash -cl \"cd $WSL_TARGET && docker-compose up -d\"${Reset}"
+        Write-Host
+        Write-Host "注意：实际数据存储在Docker管理的匿名卷中"
     } else {
         Write-Host "${Red}✗${Reset} 目录初始化失败！ ($successCount/$totalCount)"
         exit 1
