@@ -1,0 +1,7 @@
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/hadoop/conf/Configuration
+	at Top10Driver.main(Top10Driver.java:21)
+Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.conf.Configuration
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:581)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+	... 1 more

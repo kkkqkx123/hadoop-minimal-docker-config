@@ -1,0 +1,33 @@
+2025-10-28 03:59:32,005 INFO  [MoveIntermediateToDone Thread #0] hs.HistoryFileManager (HistoryFileManager.java:moveToDone(433)) - Deleting JobSummary file: [hdfs://master:8020/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001.summary]
+
+2025-10-28 03:59:32,039 INFO  [MoveIntermediateToDone Thread #0] hs.HistoryFileManager (HistoryFileManager.java:makeDoneSubdir(1130)) - Perms after creating 504, Expected: 504
+
+2025-10-28 03:59:32,040 INFO  [MoveIntermediateToDone Thread #0] hs.HistoryFileManager (HistoryFileManager.java:moveToDoneNow(1091)) - Moving hdfs://master:8020/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001-1761623779717-root-Student+Score+Top10-1761623813971-1-1-SUCCEEDED-default-1761623794904.jhist to hdfs://master:8020/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000/job_1761621654418_0001-1761623779717-root-Student+Score+Top10-1761623813971-1-1-SUCCEEDED-default-1761623794904.jhist
+
+2025-10-28 03:59:32,064 INFO  [MoveIntermediateToDone Thread #0] hs.HistoryFileManager (HistoryFileManager.java:moveToDoneNow(1091)) - Moving hdfs://master:8020/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001_conf.xml to hdfs://master:8020/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000/job_1761621654418_0001_conf.xml
+
+
+==> /opt/hadoop/logs/hadoop-root-namenode-master.out <==
+
+2025-10-28 03:59:31,403 INFO  [IPC Server handler 8 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=listStatus	src=/tmp/hadoop-yarn/staging/history/done_intermediate	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:31,413 INFO  [IPC Server handler 9 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=listStatus	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:31,697 INFO  [IPC Server handler 7 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001.summary	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:31,729 INFO  [IPC Server handler 0 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=open	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001.summary	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:32,009 INFO  [IPC Server handler 2 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=delete	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001.summary	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:32,009 INFO  [FSEditLogAsync] namenode.FSEditLog (FSEditLog.java:printStatistics(794)) - Number of transactions: 117 Total time for transactions(ms): 83 Number of transactions batched in Syncs: 16 Number of syncs: 101 SyncTimes(ms): 359 
+
+2025-10-28 03:59:32,022 INFO  [IPC Server handler 6 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:32,028 INFO  [IPC Server handler 1 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=mkdirs	src=/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000	dst=null	perm=root:supergroup:rwxrwx---	proto=rpc
+
+2025-10-28 03:59:32,038 INFO  [IPC Server handler 5 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000	dst=null	perm=null	proto=rpc
+
+2025-10-28 03:59:32,054 INFO  [IPC Server handler 8 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=rename (options=[NONE])	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001-1761623779717-root-Student+Score+Top10-1761623813971-1-1-SUCCEEDED-default-1761623794904.jhist	dst=/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000/job_1761621654418_0001-1761623779717-root-Student+Score+Top10-1761623813971-1-1-SUCCEEDED-default-1761623794904.jhist	perm=root:supergroup:rwxrwx---	proto=rpc
+
+2025-10-28 03:59:32,067 INFO  [IPC Server handler 9 on default port 8020] FSNamesystem.audit (FSNamesystem.java:logAuditMessage(8574)) - allowed=true	ugi=root (auth:SIMPLE)	ip=/172.18.0.4	cmd=rename (options=[NONE])	src=/tmp/hadoop-yarn/staging/history/done_intermediate/root/job_1761621654418_0001_conf.xml	dst=/tmp/hadoop-yarn/staging/history/done/2025/10/28/000000/job_1761621654418_0001_conf.xml	perm=root:supergroup:rwxrwx---	proto=rpc
+

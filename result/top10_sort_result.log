@@ -1,0 +1,2 @@
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+Usage: Top10Driver <input path> <output path>

@@ -67,4 +67,41 @@
     <name>yarn.resourcemanager.scheduler.class</name>
     <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
   </property>
+
+  <!-- YARN日志聚合和清理配置 -->
+  <property>
+    <name>yarn.log-aggregation.retain-seconds</name>
+    <value>604800</value>
+    <description>聚合日志保留时间（秒），默认7天（604800秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.log-aggregation.retain-check-interval-seconds</name>
+    <value>86400</value>
+    <description>聚合日志清理检查间隔（秒），默认24小时（86400秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.log.retain-seconds</name>
+    <value>604800</value>
+    <description>NodeManager本地日志保留时间（秒），默认7天（604800秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.log.deletion-threads-count</name>
+    <value>4</value>
+    <description>日志删除线程数，提高清理效率</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>/tmp/logs</value>
+    <description>远程应用日志目录</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir-suffix</name>
+    <value>logs</value>
+    <description>远程应用日志目录后缀</description>
+  </property>
 </configuration>

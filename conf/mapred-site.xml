@@ -73,4 +73,35 @@
     <name>mapreduce.reduce.env</name>
     <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
   </property>
+
+  <!-- JobHistory日志清理配置 -->
+  <property>
+    <name>mapreduce.jobhistory.max-age-ms</name>
+    <value>604800000</value>
+    <description>JobHistory日志最大保留时间（毫秒），默认7天（604800000毫秒）</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.cleaner.enable</name>
+    <value>true</value>
+    <description>启用JobHistory清理器</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.cleaner.interval-ms</name>
+    <value>86400000</value>
+    <description>清理器运行间隔（毫秒），默认24小时（86400000毫秒）</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.done-dir</name>
+    <value>/tmp/hadoop-yarn/staging/history/done</value>
+    <description>完成的JobHistory文件存储目录</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.intermediate-done-dir</name>
+    <value>/tmp/hadoop-yarn/staging/history/done_intermediate</value>
+    <description>中间JobHistory文件存储目录</description>
+  </property>
 </configuration>
