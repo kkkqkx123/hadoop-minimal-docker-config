@@ -93,29 +93,9 @@ services:
 
 volumes:
   namenode:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /tmp/hadoop-volumes/namenode
   datanode1:
-    driver: local
-    driver_opts:
-      type: none  
-      o: bind
-      device: /tmp/hadoop-volumes/datanode1
   datanode2:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /tmp/hadoop-volumes/datanode2
   yarnlogs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /tmp/hadoop-volumes/yarnlogs
 
 networks:
   hadoop:
