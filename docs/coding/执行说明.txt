@@ -1,1 +1,0 @@
-每次执行命令时把执行结果重定向到/mnt/d/项目/docker-compose/hadoop/result中，方便本地查看日志
