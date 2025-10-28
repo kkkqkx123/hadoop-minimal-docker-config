@@ -1,0 +1,1 @@
+docker exec master bash -c "cd /home/exp1 && javac -cp '/opt/hadoop/share/hadoop/common/*:/opt/hadoop/share/hadoop/mapreduce/*' *.java"

@@ -1,6 +1,7 @@
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import org.apache.hadoop.io.WritableComparable;
 
 /**
  * 自定义WritableComparable类，用于存储学生成绩信息并实现排序逻辑
