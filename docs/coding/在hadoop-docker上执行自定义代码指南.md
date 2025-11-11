@@ -114,18 +114,7 @@ public class WordCount {
 }
 ```
 
-### 2. 编译和打包
-
-建议先在本地跑通单元测试、集成测试，以免在容器中调试时遇到问题，浪费更多时间。
-```bash
-# 编译Java程序
-javac -classpath "/opt/hadoop/share/hadoop/common/*:/opt/hadoop/share/hadoop/mapreduce/*:/opt/hadoop/share/hadoop/client/*" -d target/classes src/main/java/com/example/WordCount.java
-
-# 创建JAR包
-jar -cvf wordcount.jar -C target/classes/ .
-```
-
-### 3. 在容器中执行
+### 2. 在容器中执行
 
 #### 方法1：将代码复制到容器
 

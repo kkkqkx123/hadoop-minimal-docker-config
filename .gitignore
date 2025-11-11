@@ -3,3 +3,8 @@
 **/*.txt
 **/*.class
 **/*.jar
+**/*.build
+**/*.zip
+**/*.rar
+**/*.csv
+**/*.docx
