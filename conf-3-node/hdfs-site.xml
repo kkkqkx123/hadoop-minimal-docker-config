@@ -11,10 +11,10 @@
     <value>file:///hadoop/dfs/datanode</value>
   </property>
 
-  <!-- 伪分布式模式，副本系数设为 1 -->
+  <!-- 两个 worker，副本系数设为 2 -->
   <property>
     <name>dfs.replication</name>
-    <value>1</value>
+    <value>2</value>
   </property>
 
   <!-- demo 环境禁用本地文件权限检查，减少权限问题 -->

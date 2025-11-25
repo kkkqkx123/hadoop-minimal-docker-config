@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <configuration>
-  <!-- HDFS 入口（伪分布式模式使用localhost:9000） -->
+  <!-- HDFS 入口（与 compose 中 master 的 8020 端口一致） -->
   <property>
     <name>fs.defaultFS</name>
-    <value>hdfs://localhost:9000</value>
+    <value>hdfs://master:8020</value>
   </property>
 
   <!-- Hadoop 运行时临时目录 -->

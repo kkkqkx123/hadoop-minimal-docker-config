@@ -1,0 +1,104 @@
+version: "3.9"
+
+services:
+  master:
+    image: hadoop:optimized
+    container_name: master
+    hostname: master
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    environment:
+      - HADOOP_ROLE=master
+      # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
+      - HDFS_NAMENODE_USER=root
+      - HDFS_DATANODE_USER=root
+      - HDFS_SECONDARYNAMENODE_USER=root
+      - HDFS_ZKFC_USER=root
+      - YARN_RESOURCEMANAGER_USER=root
+      - YARN_NODEMANAGER_USER=root
+      - SHELL=/bin/bash
+    ports:
+      - "9870:9870"   # NameNode Web UI
+      - "8088:8088"   # ResourceManager Web UI
+      - "19888:19888" # JobHistory Web UI
+      - "10020:10020" # JobHistory RPC
+      - "8020:8020"   # HDFS NN RPC (fs.defaultFS)
+      - "22:22"       # SSH（可选）
+    volumes:
+      - namenode:/hadoop/dfs/namenode
+      - yarnlogs:/tmp/hadoop-yarn
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    depends_on:
+      - worker1
+      - worker2
+    networks:
+      - hadoop
+
+  worker1:
+    image: hadoop:optimized
+    container_name: worker1
+    hostname: worker1
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '0.8'
+        reservations:
+          memory: 512M
+          cpus: '0.3'
+    environment:
+      - HADOOP_ROLE=worker
+      - HDFS_DATANODE_USER=root
+      - YARN_NODEMANAGER_USER=root
+      - SHELL=/bin/bash
+    ports:
+      - "9864:9864"   # DataNode Web UI（worker1）
+      - "8042:8042"   # NodeManager Web UI（worker1）
+    volumes:
+      - datanode1:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+
+  worker2:
+    image: hadoop:optimized
+    container_name: worker2
+    hostname: worker2
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '0.8'
+        reservations:
+          memory: 512M
+          cpus: '0.3'
+    environment:
+      - HADOOP_ROLE=worker
+      - HDFS_DATANODE_USER=root
+      - YARN_NODEMANAGER_USER=root
+    ports:
+      - "9865:9864"   # DataNode Web UI（worker2 映射到宿主 9865）
+      - "8043:8042"   # NodeManager Web UI（worker2 映射到宿主 8043）
+    volumes:
+      - datanode2:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+
+volumes:
+  namenode:
+  datanode1:
+  datanode2:
+  yarnlogs:
+
+networks:
+  hadoop:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
