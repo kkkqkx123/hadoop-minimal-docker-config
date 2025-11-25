@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>master</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+  </property>
+
+  <!-- YARN Web UI 8088 默认即可；NodeManager Web UI 在 8042（各 worker 已映射端口） -->
+  
+  <!-- 资源限制配置 -->
+  <property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>1024</value>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.resource.cpu-vcores</name>
+    <value>1</value>
+  </property>
+  
+  <!-- 容器内存限制 -->
+  <property>
+    <name>yarn.scheduler.minimum-allocation-mb</name>
+    <value>256</value>
+  </property>
+  
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>1024</value>
+  </property>
+  
+  <!-- 容器CPU限制 -->
+  <property>
+    <name>yarn.scheduler.minimum-allocation-vcores</name>
+    <value>1</value>
+  </property>
+  
+  <property>
+    <name>yarn.scheduler.maximum-allocation-vcores</name>
+    <value>1</value>
+  </property>
+  
+  <!-- 优化NodeManager性能 -->
+  <property>
+    <name>yarn.nodemanager.delete.debug-delay-sec</name>
+    <value>0</value>
+  </property>
+  
+  <!-- 减少心跳间隔，提高响应速度 -->
+  <property>
+    <name>yarn.resourcemanager.scheduler.monitor.policies</name>
+    <value>org.apache.hadoop.yarn.server.resourcemanager.monitor.capacity.ProportionalCapacityPreemptionPolicy</value>
+  </property>
+  
+  <!-- 指定使用容量调度器 -->
+  <property>
+    <name>yarn.resourcemanager.scheduler.class</name>
+    <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+  </property>
+
+  <!-- YARN日志聚合和清理配置 -->
+  <property>
+    <name>yarn.log-aggregation.retain-seconds</name>
+    <value>604800</value>
+    <description>聚合日志保留时间（秒），默认7天（604800秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.log-aggregation.retain-check-interval-seconds</name>
+    <value>86400</value>
+    <description>聚合日志清理检查间隔（秒），默认24小时（86400秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.log.retain-seconds</name>
+    <value>604800</value>
+    <description>NodeManager本地日志保留时间（秒），默认7天（604800秒）</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.log.deletion-threads-count</name>
+    <value>4</value>
+    <description>日志删除线程数，提高清理效率</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>/tmp/logs</value>
+    <description>远程应用日志目录</description>
+  </property>
+  
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir-suffix</name>
+    <value>logs</value>
+    <description>远程应用日志目录后缀</description>
+  </property>
+</configuration>

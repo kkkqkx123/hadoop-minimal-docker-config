@@ -1,55 +1,95 @@
 version: "3.9"
 
+# Hadoop HDFS-only 配置
+# 仅启动HDFS服务，禁用YARN和MapReduce以节省资源
+# 与Spark Standalone模式配合使用
+
 services:
-  hadoop-pseudo:
+  namenode:
     image: hadoop:optimized
-    container_name: hadoop-pseudo
-    hostname: localhost
+    container_name: namenode
+    hostname: namenode
     deploy:
       resources:
         limits:
-          memory: 2.4G
-          cpus: '2.0'  # 降低CPU限制，更合理分配资源
+          memory: 1.2G
+          cpus: '1.0'
         reservations:
-          memory: 1.2G  # 提高内存预留，确保基础运行
-          cpus: '1.0'   # 提高CPU预留
+          memory: 800M
+          cpus: '0.5'
     environment:
-      - HADOOP_ROLE=pseudo
-      # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
+      - HADOOP_ROLE=namenode
       - HDFS_NAMENODE_USER=root
       - HDFS_DATANODE_USER=root
       - HDFS_SECONDARYNAMENODE_USER=root
-      - HDFS_ZKFC_USER=root
-      - YARN_RESOURCEMANAGER_USER=root
-      - YARN_NODEMANAGER_USER=root
       - SHELL=/bin/bash
     ports:
       - "9870:9870"   # NameNode Web UI
-      - "8088:8088"   # ResourceManager Web UI
-      - "19888:19888" # JobHistory Web UI
-      - "10020:10020" # JobHistory RPC
-      - "9000:9000"   # HDFS NN RPC (fs.defaultFS for pseudo-distributed)
-      - "9864:9864"   # DataNode Web UI
-      - "8042:8042"   # NodeManager Web UI
+      - "9000:9000"   # HDFS NN RPC
       - "22:22"       # SSH（可选）
     volumes:
       - namenode:/hadoop/dfs/namenode
-      - datanode:/hadoop/dfs/datanode
-      - yarnlogs:/tmp/hadoop-yarn
       - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
     healthcheck:
-      test: ["CMD", "jps"]
+      test: ["CMD", "curl", "-f", "http://localhost:9870"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+    command: >
+      bash -c "
+        hdfs --daemon start namenode &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  datanode:
+    image: hadoop:optimized
+    container_name: datanode
+    hostname: datanode
+    deploy:
+      resources:
+        limits:
+          memory: 800M
+          cpus: '0.8'
+        reservations:
+          memory: 400M
+          cpus: '0.3'
+    environment:
+      - HADOOP_ROLE=datanode
+      - HDFS_NAMENODE_USER=root
+      - HDFS_DATANODE_USER=root
+      - SHELL=/bin/bash
+    ports:
+      - "9864:9864"   # DataNode Web UI
+    volumes:
+      - datanode:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    depends_on:
+      namenode:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9864"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: >
+      bash -c "
+        # 等待NameNode启动
+        sleep 30 &&
+        hdfs --daemon start datanode &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
 
 volumes:
   namenode:
   datanode:
-  yarnlogs:
 
 networks:
   hadoop:

@@ -1,0 +1,185 @@
+version: '3.8'
+
+# Spark Standalone 模式集成配置
+# 与现有 Hadoop 伪分布式环境配合使用
+
+services:
+  # Spark Master 节点
+  spark-master:
+    image: apache/spark:v3.5.3
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - "8080:8080"  # Spark Master Web UI
+      - "7077:7077"  # Spark Master RPC
+      - "6066:6066"  # Spark Master REST API
+    volumes:
+      - ./conf/spark:/opt/spark/conf
+      - ./data/spark-logs:/opt/spark/logs
+      - ./data/spark-work:/opt/spark/work
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.2'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - namenode
+      - datanode
+    restart: unless-stopped
+
+  # Spark Worker 节点
+  spark-worker:
+    image: apache/spark:v3.5.3
+    container_name: spark-worker
+    hostname: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_PORT=8888
+      - SPARK_WORKER_WEBUI_PORT=8081
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "8081:8081"  # Spark Worker Web UI
+      - "8888:8888"  # Spark Worker RPC
+    volumes:
+      - ./conf/spark:/opt/spark/conf
+      - ./data/spark-logs:/opt/spark/logs
+      - ./data/spark-work:/opt/spark/work
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop-network
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Spark History Server（可选）
+  spark-history:
+    image: apache/spark:v3.5.3
+    container_name: spark-history
+    hostname: spark-history
+    environment:
+      - SPARK_MODE=history-server
+      - SPARK_HISTORY_OPTS=-Dspark.history.fs.logDirectory=hdfs://namenode:9000/spark-logs -Dspark.history.fs.cleaner.enabled=true -Dspark.history.fs.cleaner.interval=1d -Dspark.history.fs.cleaner.maxAge=7d
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "18080:18080"  # Spark History Server Web UI
+    volumes:
+      - ./conf/spark:/opt/spark/conf
+      - ./data/spark-history:/opt/spark/logs
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.2'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      spark-master:
+        condition: service_healthy
+      namenode:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Jupyter with Spark（可选，用于交互式开发）
+  jupyter-spark:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter-spark
+    hostname: jupyter-spark
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_DRIVER_MEMORY=512m
+      - SPARK_EXECUTOR_MEMORY=768m
+      - SPARK_EXECUTOR_CORES=1
+      - PYSPARK_PYTHON=python3
+      - PYSPARK_DRIVER_PYTHON=python3
+    ports:
+      - "8888:8888"  # Jupyter Lab
+      - "4040:4040"  # Spark Driver UI
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./conf/spark:/opt/spark/conf
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+      - ./data:/data
+    networks:
+      - hadoop-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - jupyter
+
+networks:
+  hadoop-network:
+    external: true
+
+# 数据卷配置
+volumes:
+  spark-logs:
+    driver: local
+  spark-work:
+    driver: local
+  spark-history:
+    driver: local

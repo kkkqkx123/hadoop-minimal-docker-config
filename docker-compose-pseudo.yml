@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  hadoop-pseudo:
+    image: hadoop:optimized
+    container_name: hadoop-pseudo
+    hostname: localhost
+    deploy:
+      resources:
+        limits:
+          memory: 2.4G
+          cpus: '2.0'  # 降低CPU限制，更合理分配资源
+        reservations:
+          memory: 1.2G  # 提高内存预留，确保基础运行
+          cpus: '1.0'   # 提高CPU预留
+    environment:
+      - HADOOP_ROLE=pseudo
+      # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
+      - HDFS_NAMENODE_USER=root
+      - HDFS_DATANODE_USER=root
+      - HDFS_SECONDARYNAMENODE_USER=root
+      - HDFS_ZKFC_USER=root
+      - YARN_RESOURCEMANAGER_USER=root
+      - YARN_NODEMANAGER_USER=root
+      - SHELL=/bin/bash
+    ports:
+      - "9870:9870"   # NameNode Web UI
+      - "8088:8088"   # ResourceManager Web UI
+      - "19888:19888" # JobHistory Web UI
+      - "10020:10020" # JobHistory RPC
+      - "9000:9000"   # HDFS NN RPC (fs.defaultFS for pseudo-distributed)
+      - "9864:9864"   # DataNode Web UI
+      - "8042:8042"   # NodeManager Web UI
+      - "22:22"       # SSH（可选）
+    volumes:
+      - namenode:/hadoop/dfs/namenode
+      - datanode:/hadoop/dfs/datanode
+      - yarnlogs:/tmp/hadoop-yarn
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    healthcheck:
+      test: ["CMD", "jps"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  namenode:
+  datanode:
+  yarnlogs:
+
+networks:
+  hadoop:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
