@@ -1,0 +1,213 @@
+version: "3.9"
+
+# Hadoop + Spark 集成配置
+# 支持两种模式：
+# 1. HDFS-only模式（默认）：仅HDFS + Spark Standalone，禁用MapReduce
+# 2. 完整模式：HDFS + YARN + MapReduce + Spark Standalone
+# 通过环境变量控制：ENABLE_MAPREDUCE=true 启用完整模式
+
+services:
+  # HDFS NameNode
+  namenode:
+    image: hadoop:optimized
+    container_name: namenode
+    hostname: namenode
+    deploy:
+      resources:
+        limits:
+          memory: 1.2G
+          cpus: '1.0'
+        reservations:
+          memory: 800M
+          cpus: '0.5'
+    environment:
+      - HADOOP_ROLE=namenode
+      - HDFS_NAMENODE_USER=root
+      - HDFS_DATANODE_USER=root
+      - HDFS_SECONDARYNAMENODE_USER=root
+      - SHELL=/bin/bash
+      - ENABLE_MAPREDUCE=${ENABLE_MAPREDUCE:-false}
+    ports:
+      - "9870:9870"   # NameNode Web UI
+      - "9000:9000"   # HDFS NN RPC
+      - "22:22"       # SSH（可选）
+    volumes:
+      - namenode:/hadoop/dfs/namenode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9870"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: >
+      bash -c "
+        hdfs --daemon start namenode &&
+        if [ \"$$ENABLE_MAPREDUCE\" = \"true\" ]; then
+          echo '启动 ResourceManager...'
+          yarn --daemon start resourcemanager
+          echo '启动 JobHistory Server...'
+          mapred --daemon start historyserver
+        fi &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  # HDFS DataNode
+  datanode:
+    image: hadoop:optimized
+    container_name: datanode
+    hostname: datanode
+    deploy:
+      resources:
+        limits:
+          memory: 800M
+          cpus: '0.8'
+        reservations:
+          memory: 400M
+          cpus: '0.3'
+    environment:
+      - HADOOP_ROLE=datanode
+      - HDFS_NAMENODE_USER=root
+      - HDFS_DATANODE_USER=root
+      - SHELL=/bin/bash
+      - ENABLE_MAPREDUCE=${ENABLE_MAPREDUCE:-false}
+    ports:
+      - "9864:9864"   # DataNode Web UI
+      - "8042:8042"   # NodeManager Web UI（仅在完整模式下启用）
+    volumes:
+      - datanode:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    depends_on:
+      namenode:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9864"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: >
+      bash -c "
+        # 等待NameNode启动
+        sleep 30 &&
+        hdfs --daemon start datanode &&
+        if [ \"$$ENABLE_MAPREDUCE\" = \"true\" ]; then
+          echo '启动 NodeManager...'
+          yarn --daemon start nodemanager
+        fi &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  # Spark Master
+  spark-master:
+    image: apache/spark:v3.5.3
+    container_name: spark-master
+    hostname: spark-master
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.2'
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - "8080:8080"  # Spark Master Web UI
+      - "7077:7077"  # Spark Master RPC
+      - "6066:6066"  # Spark Master REST API
+    volumes:
+      - ./conf/spark:/opt/spark/conf
+      - spark-logs:/opt/spark/logs
+      - spark-work:/opt/spark/work
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      namenode:
+        condition: service_healthy
+      datanode:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Spark Worker
+  spark-worker:
+    image: apache/spark:v3.5.3
+    container_name: spark-worker
+    hostname: spark-worker
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_PORT=8888
+      - SPARK_WORKER_WEBUI_PORT=8081
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "8081:8081"  # Spark Worker Web UI
+      - "8888:8888"  # Spark Worker RPC
+    volumes:
+      - ./conf/spark:/opt/spark/conf
+      - spark-logs:/opt/spark/logs
+      - spark-work:/opt/spark/work
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+    networks:
+      - hadoop
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    restart: unless-stopped
+
+    ports:
+      - "8888:8888"  # Jupyter Lab
+      - "4040:4040"  # Spark Driver UI
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./conf/spark:/opt/spark/conf
+      - ./conf:/opt/hadoop/etc/hadoop:ro
+      - ./data:/data
+    networks:
+      - hadoop
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - jupyter

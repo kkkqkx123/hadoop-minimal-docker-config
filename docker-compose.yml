@@ -1,90 +1,140 @@
-version: "3.9"
+version: '3.8'
 
-# Hadoop HDFS-only 配置
-# 仅启动HDFS服务，禁用YARN和MapReduce以节省资源
-# 与Spark Standalone模式配合使用
+# 单节点Hadoop HDFS-only配置（禁用MapReduce）
+# 仅包含HDFS服务：NameNode + DataNode
+# 资源占用：约2GB内存，1.8核CPU
 
 services:
-  namenode:
+  # Hadoop单节点容器（仅HDFS）
+  hadoop-pseudo:
     image: hadoop:optimized
-    container_name: namenode
-    hostname: namenode
+    container_name: hadoop-pseudo
+    hostname: localhost
     deploy:
       resources:
         limits:
-          memory: 1.2G
-          cpus: '1.0'
+          memory: 2G    # 总内存限制
+          cpus: '1.8'   # CPU限制
         reservations:
-          memory: 800M
-          cpus: '0.5'
+          memory: 1G    # 内存预留
+          cpus: '1.0'   # CPU预留
     environment:
-      - HADOOP_ROLE=namenode
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      # 禁用YARN和MapReduce，只启动HDFS
+      - ENABLE_YARN=false
+      - ENABLE_MAPREDUCE=false
       - HDFS_NAMENODE_USER=root
       - HDFS_DATANODE_USER=root
       - HDFS_SECONDARYNAMENODE_USER=root
-      - SHELL=/bin/bash
+      - YARN_RESOURCEMANAGER_USER=root
+      - YARN_NODEMANAGER_USER=root
+      - MAPRED_HISTORYSERVER_USER=root
     ports:
+      # HDFS Web UI
       - "9870:9870"   # NameNode Web UI
-      - "9000:9000"   # HDFS NN RPC
-      - "22:22"       # SSH（可选）
+      # HDFS 数据端口
+      - "9000:9000"   # NameNode RPC端口
+      - "9864:9864"   # DataNode Web UI
+      - "9866:9866"   # DataNode数据传输端口
+      - "9867:9867"   # DataNode IPC端口
     volumes:
       - namenode:/hadoop/dfs/namenode
-      - ./conf:/opt/hadoop/etc/hadoop:ro
+      - datanode:/hadoop/dfs/datanode
+      - ./conf:/opt/hadoop/etc/hadoop
+      - ./data:/data
+      - ./scripts:/scripts
     networks:
       - hadoop
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9870"]
+      test: ["CMD", "jps", "|", "grep", "-E", "NameNode|DataNode"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     command: >
       bash -c "
+        echo 'Starting HDFS-only mode...' &&
+        # 格式化NameNode（首次启动）
+        if [ ! -d '/hadoop/dfs/namenode/current' ]; then
+          echo 'Formatting NameNode...'
+          hdfs namenode -format -force -nonInteractive
+        fi &&
+        
+        # 启动HDFS守护进程
+        echo 'Starting NameNode...'
         hdfs --daemon start namenode &&
+        
+        echo 'Starting DataNode...'
+        hdfs --daemon start datanode &&
+        
+        # 等待服务启动
+        sleep 10 &&
+        
+        # 创建必要的HDFS目录
+        echo 'Creating HDFS directories...'
+        hdfs dfs -mkdir -p /tmp || true
+        hdfs dfs -mkdir -p /user || true
+        hdfs dfs -mkdir -p /data || true
+        hdfs dfs -chmod -R 777 /tmp || true
+        hdfs dfs -chmod -R 755 /user || true
+        hdfs dfs -chmod -R 755 /data || true
+        
+        echo 'HDFS-only mode started successfully!' &&
+        echo 'NameNode Web UI: http://localhost:9870' &&
+        echo 'DataNode Web UI: http://localhost:9864' &&
+        echo '' &&
+        echo 'Available HDFS commands:' &&
+        echo '  hdfs dfs -ls /' &&
+        echo '  hdfs dfs -put localfile /data/' &&
+        echo '  hdfs dfs -get /data/remotefile localfile' &&
+        echo '' &&
+        
+        # 保持容器运行
         tail -f /dev/null
       "
     restart: unless-stopped
 
-  datanode:
-    image: hadoop:optimized
-    container_name: datanode
-    hostname: datanode
+  # 单节点Spark（可选，独立运行）
+  spark-master:
+    image: apache/spark:v3.5.7
+    container_name: spark-master
+    hostname: spark-master
     deploy:
       resources:
         limits:
-          memory: 800M
-          cpus: '0.8'
+          memory: 512M    # 内存限制
+          cpus: '0.5'     # CPU限制
         reservations:
-          memory: 400M
-          cpus: '0.3'
+          memory: 256M    # 内存预留
+          cpus: '0.2'     # CPU预留
     environment:
-      - HADOOP_ROLE=datanode
-      - HDFS_NAMENODE_USER=root
-      - HDFS_DATANODE_USER=root
-      - SHELL=/bin/bash
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
     ports:
-      - "9864:9864"   # DataNode Web UI
+      - "8080:8080"   # Spark Master Web UI
+      - "7077:7077"   # Spark Master RPC端口
+      - "6066:6066"   # Spark Master REST端口
     volumes:
-      - datanode:/hadoop/dfs/datanode
+      - ./conf/spark:/opt/spark/conf
+      - ./data:/data
       - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
-    depends_on:
-      namenode:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9864"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
-    command: >
-      bash -c "
-        # 等待NameNode启动
-        sleep 30 &&
-        hdfs --daemon start datanode &&
-        tail -f /dev/null
-      "
+      start_period: 30s
+    depends_on:
+      hadoop-pseudo:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
