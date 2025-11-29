@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-  <!-- HDFS 入口（伪分布式模式使用localhost:9000） -->
+  <!-- HDFS 入口（单节点模式使用localhost） -->
   <property>
     <name>fs.defaultFS</name>
     <value>hdfs://localhost:9000</value>

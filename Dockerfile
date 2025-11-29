@@ -48,7 +48,7 @@ COPY conf/workers ${HADOOP_HOME}/etc/hadoop/workers
 # 转换配置文件为Unix格式
 RUN dos2unix ${HADOOP_HOME}/etc/hadoop/*.xml ${HADOOP_HOME}/etc/hadoop/*.sh ${HADOOP_HOME}/etc/hadoop/workers
 
-COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY scripts/entrypoint-pseudo.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && dos2unix /usr/local/bin/entrypoint.sh
 
 # 暴露常用端口（compose 里会映射）

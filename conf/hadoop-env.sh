@@ -1,5 +1,5 @@
-# OpenJDK 11 slim 版本的JAVA_HOME
-export JAVA_HOME=/usr/local/openjdk-11
+# OpenJDK 8 版本的JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/jre
 export SHELL=/bin/bash
 
 # JVM性能优化参数

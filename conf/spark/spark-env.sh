@@ -3,8 +3,8 @@
 # Spark 环境变量配置
 # 适用于与 Hadoop 伪分布式环境集成
 
-# Java 配置
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+# Java 配置 - 适配官方Spark镜像的Java 11路径
+export JAVA_HOME=/opt/java/openjdk
 
 # Hadoop 配置集成
 export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
@@ -31,9 +31,9 @@ export SPARK_EXECUTOR_MEMORY=768m
 export SPARK_WORKER_CORES=1
 export SPARK_EXECUTOR_CORES=1
 
-# 垃圾回收优化
-export SPARK_DAEMON_JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=80"
-export SPARK_WORKER_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=80"
+# 垃圾回收优化 - 适配Java 11
+export SPARK_DAEMON_JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=80"
+export SPARK_WORKER_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=80"
 
 # 网络配置 - 适配 Docker 环境
 export SPARK_MASTER_HOST=spark-master
