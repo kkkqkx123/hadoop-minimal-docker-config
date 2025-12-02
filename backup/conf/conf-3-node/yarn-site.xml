@@ -2,7 +2,7 @@
 <configuration>
   <property>
     <name>yarn.resourcemanager.hostname</name>
-    <value>hadoop-pseudo</value>
+    <value>master</value>
   </property>
 
   <property>
@@ -68,28 +68,6 @@
     <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
   </property>
 
-  <!-- YARN Web UI 配置优化 -->
-  <property>
-    <name>yarn.resourcemanager.webapp.address</name>
-    <value>hadoop-pseudo:8088</value>
-  </property>
-  
-  <property>
-    <name>yarn.nodemanager.webapp.address</name>
-    <value>hadoop-pseudo:8042</value>
-  </property>
-  
-  <!-- YARN历史服务器配置 -->
-  <property>
-    <name>yarn.timeline-service.enabled</name>
-    <value>true</value>
-  </property>
-  
-  <property>
-    <name>yarn.timeline-service.hostname</name>
-    <value>hadoop-pseudo</value>
-  </property>
-  
   <!-- YARN日志聚合和清理配置 -->
   <property>
     <name>yarn.log-aggregation.retain-seconds</name>
@@ -111,8 +89,8 @@
   
   <property>
     <name>yarn.nodemanager.log.deletion-threads-count</name>
-    <value>2</value>
-    <description>减少日志删除线程数以节省资源</description>
+    <value>4</value>
+    <description>日志删除线程数，提高清理效率</description>
   </property>
   
   <property>
@@ -125,18 +103,5 @@
     <name>yarn.nodemanager.remote-app-log-dir-suffix</name>
     <value>logs</value>
     <description>远程应用日志目录后缀</description>
-  </property>
-  
-  <!-- NodeManager配置优化 -->
-  <property>
-    <name>yarn.nodemanager.vmem-check-enabled</name>
-    <value>false</value>
-    <description>禁用虚拟内存检查以避免资源不足问题</description>
-  </property>
-  
-  <property>
-    <name>yarn.nodemanager.pmem-check-enabled</name>
-    <value>false</value>
-    <description>禁用物理内存检查以避免资源不足问题</description>
   </property>
 </configuration>

@@ -8,6 +8,7 @@ export SHELL=/bin/bash
 export JAVA_HOME=/usr/local/openjdk-11
 
 # 设置Hadoop配置目录
+export HADOOP_HOME=/opt/hadoop
 export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 
 # 启动 SSHD（并生成主机 host keys）

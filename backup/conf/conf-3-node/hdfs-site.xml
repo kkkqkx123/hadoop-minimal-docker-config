@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-  <!-- NameNode 与 DataNode 数据目录（Docker卷挂载路径） -->
+  <!-- NameNode 与 DataNode 数据目录 -->
   <property>
     <name>dfs.namenode.name.dir</name>
     <value>file:///hadoop/dfs/namenode</value>
@@ -10,23 +10,11 @@
     <name>dfs.datanode.data.dir</name>
     <value>file:///hadoop/dfs/datanode</value>
   </property>
-  
-  <!-- 安全模式等待时间优化 -->
-  <property>
-    <name>dfs.safemode.extension</name>
-    <value>30000</value>
-  </property>
-  
-  <!-- 禁用安全模式自动退出用于测试 -->
-  <property>
-    <name>dfs.safemode.min.datanodes</name>
-    <value>1</value>
-  </property>
 
-  <!-- 单节点模式，副本系数设为 1 -->
+  <!-- 两个 worker，副本系数设为 2 -->
   <property>
     <name>dfs.replication</name>
-    <value>1</value>
+    <value>2</value>
   </property>
 
   <!-- demo 环境禁用本地文件权限检查，减少权限问题 -->

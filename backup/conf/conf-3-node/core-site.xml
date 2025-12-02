@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <configuration>
-  <!-- HDFS 入口（单节点模式使用容器名和正确端口） -->
+  <!-- HDFS 入口（与 compose 中 master 的 8020 端口一致） -->
   <property>
     <name>fs.defaultFS</name>
-    <value>hdfs://hadoop-pseudo:9000</value>
+    <value>hdfs://master:8020</value>
   </property>
 
   <!-- Hadoop 运行时临时目录 -->

@@ -1,20 +1,21 @@
-version: "3.9"
-
 services:
   hadoop-pseudo:
-    image: hadoop:3.3.6
+    image: apache/hadoop:3.3.6
     container_name: hadoop-pseudo
-    hostname: localhost
+    hostname: hadoop-pseudo
     deploy:
       resources:
         limits:
-          memory: 2.4G
-          cpus: '2.0'  # 降低CPU限制，更合理分配资源
+          memory: 2G
+          cpus: '1.0'
         reservations:
-          memory: 1.2G  # 提高内存预留，确保基础运行
-          cpus: '1.0'   # 提高CPU预留
+          memory: 1G
+          cpus: '0.5'
     environment:
-      - HADOOP_ROLE=pseudo
+      - HADOOP_ROLE=master
+      - HADOOP_HOME=/opt/hadoop
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      - PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
       # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
       - HDFS_NAMENODE_USER=root
       - HDFS_DATANODE_USER=root
@@ -23,6 +24,9 @@ services:
       - YARN_RESOURCEMANAGER_USER=root
       - YARN_NODEMANAGER_USER=root
       - SHELL=/bin/bash
+      # 限制资源，测试环境用
+      - HADOOP_HEAPSIZE_MAX=512
+      - HADOOP_HEAPSIZE_MIN=256
     ports:
       - "9870:9870"   # NameNode Web UI
       - "8088:8088"   # ResourceManager Web UI
@@ -39,12 +43,6 @@ services:
       - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
-    healthcheck:
-      test: ["CMD", "jps"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
 volumes:
   namenode:

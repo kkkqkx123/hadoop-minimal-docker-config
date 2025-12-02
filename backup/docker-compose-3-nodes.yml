@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   master:
-    image: hadoop:optimized
+    image: apache/hadoop:3.3.6
     container_name: master
     hostname: master
     deploy:
