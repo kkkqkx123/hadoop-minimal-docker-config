@@ -3,6 +3,7 @@ services:
     image: apache/hadoop:3.3.6
     container_name: hadoop-pseudo
     hostname: hadoop-pseudo
+    user: root
     deploy:
       resources:
         limits:
@@ -13,29 +14,26 @@ services:
           cpus: '0.5'
     environment:
       - HADOOP_ROLE=master
-      - HADOOP_HOME=/opt/hadoop
-      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      - PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
-      # 以 root 启动各守护进程（Hadoop 3 脚本在 root 下需要这些变量）
+      # Java环境设置
+      - JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64
+      # 用户权限设置
       - HDFS_NAMENODE_USER=root
       - HDFS_DATANODE_USER=root
       - HDFS_SECONDARYNAMENODE_USER=root
-      - HDFS_ZKFC_USER=root
       - YARN_RESOURCEMANAGER_USER=root
       - YARN_NODEMANAGER_USER=root
+      # 确保NameNode目录存在并格式化
+      - ENSURE_NAMENODE_DIR=/hadoop/dfs/namenode
+      # 禁用SSH，使用本地启动
+      - HADOOP_SSH_OPTS=-o StrictHostKeyChecking=no
       - SHELL=/bin/bash
-      # 限制资源，测试环境用
-      - HADOOP_HEAPSIZE_MAX=512
-      - HADOOP_HEAPSIZE_MIN=256
     ports:
       - "9870:9870"   # NameNode Web UI
       - "8088:8088"   # ResourceManager Web UI
       - "19888:19888" # JobHistory Web UI
-      - "10020:10020" # JobHistory RPC
-      - "9000:9000"   # HDFS NN RPC (fs.defaultFS for pseudo-distributed)
+      - "9000:9000"   # HDFS NN RPC
       - "9864:9864"   # DataNode Web UI
       - "8042:8042"   # NodeManager Web UI
-      - "22:22"       # SSH（可选）
     volumes:
       - namenode:/hadoop/dfs/namenode
       - datanode:/hadoop/dfs/datanode
@@ -43,6 +41,33 @@ services:
       - ./conf:/opt/hadoop/etc/hadoop:ro
     networks:
       - hadoop
+    # 使用官方启动脚本，但覆盖命令以支持伪分布式
+    command: >
+      bash -c "
+        # 格式化NameNode（如果目录不存在）
+        if [ ! -d /hadoop/dfs/namenode/current ]; then
+          echo 'Formatting NameNode...';
+          /opt/hadoop/bin/hdfs namenode -format -force;
+        fi &&
+        # 启动NameNode
+        echo 'Starting NameNode...';
+        /opt/hadoop/bin/hdfs --daemon start namenode &&
+        # 启动DataNode
+        echo 'Starting DataNode...';
+        /opt/hadoop/bin/hdfs --daemon start datanode &&
+        # 启动ResourceManager
+        echo 'Starting ResourceManager...';
+        /opt/hadoop/bin/yarn --daemon start resourcemanager &&
+        # 启动NodeManager
+        echo 'Starting NodeManager...';
+        /opt/hadoop/bin/yarn --daemon start nodemanager &&
+        # 启动JobHistory Server
+        echo 'Starting JobHistory Server...';
+        /opt/hadoop/bin/mapred --daemon start historyserver &&
+        # 保持容器运行
+        echo 'All services started. Container will keep running...';
+        tail -f /dev/null
+      "
 
 volumes:
   namenode:
