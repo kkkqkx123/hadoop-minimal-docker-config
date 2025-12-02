@@ -7,5 +7,3 @@ exp1\Top10Mapper.java
 exp1\StudentScore.java
 
 数据集位于exp3\dataset目录
-
-目前代码任务已经完成，你可以直接开始在hadoop中运行。
