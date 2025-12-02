@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hadoop-pseudo:
-    image: apache/hadoop:3.3.6
+    image: hadoop:optimized
     container_name: hadoop-pseudo
     hostname: hadoop-pseudo
     ports:
