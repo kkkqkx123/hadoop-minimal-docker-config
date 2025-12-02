@@ -1,4 +1,4 @@
-编写java文件，完成任务：
+编写java文件，完成任务：PageRank计算
 然后在hadoop中运行。参考 Hadoop-Docker-MapReduce执行指南.md
 当前使用的是hadoop-pseudo，已经启动了
 代码参考exp1\Top10Reducer.java

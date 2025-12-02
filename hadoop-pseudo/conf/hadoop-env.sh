@@ -1,5 +1,4 @@
-# OpenJDK 8 版本的JAVA_HOME (适配apache/hadoop:3.3.6镜像)
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64/jre
+export JAVA_HOME=/usr/local/openjdk-11
 export SHELL=/bin/bash
 
 # JVM性能优化参数
