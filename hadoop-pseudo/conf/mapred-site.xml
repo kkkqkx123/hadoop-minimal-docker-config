@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>master:10020</value>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>master:19888</value>
+  </property>
+  
+  <!-- MapReduce内存优化 -->
+  <property>
+    <name>mapreduce.map.memory.mb</name>
+    <value>512</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.reduce.memory.mb</name>
+    <value>512</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.map.java.opts</name>
+    <value>-Xmx384m</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.reduce.java.opts</name>
+    <value>-Xmx384m</value>
+  </property>
+  
+  <!-- Application Master资源配置 -->
+  <property>
+    <name>yarn.app.mapreduce.am.resource.mb</name>
+    <value>768</value>
+  </property>
+  
+  <property>
+    <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
+    <value>1</value>
+  </property>
+  
+  <!-- 任务并发度优化 -->
+  <property>
+    <name>mapreduce.job.maps</name>
+    <value>2</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.job.reduces</name>
+    <value>1</value>
+  </property>
+  
+  <!-- MapReduce环境变量配置 -->
+  <property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+  </property>
+
+  <!-- JobHistory日志清理配置 -->
+  <property>
+    <name>mapreduce.jobhistory.max-age-ms</name>
+    <value>604800000</value>
+    <description>JobHistory日志最大保留时间（毫秒），默认7天（604800000毫秒）</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.cleaner.enable</name>
+    <value>true</value>
+    <description>启用JobHistory清理器</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.cleaner.interval-ms</name>
+    <value>86400000</value>
+    <description>清理器运行间隔（毫秒），默认24小时（86400000毫秒）</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.done-dir</name>
+    <value>/tmp/hadoop-yarn/staging/history/done</value>
+    <description>完成的JobHistory文件存储目录</description>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobhistory.intermediate-done-dir</name>
+    <value>/tmp/hadoop-yarn/staging/history/done_intermediate</value>
+    <description>中间JobHistory文件存储目录</description>
+  </property>
+</configuration>
