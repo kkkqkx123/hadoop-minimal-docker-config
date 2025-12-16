@@ -1,2 +1,1 @@
-WSL_TARGET=/home/docker-compose/hadoop
 当前hadoop只用于学习、测试，不需要考虑性能问题。当资源不足时优先考虑限制请求的资源，而非增加分配的资源
