@@ -10,3 +10,6 @@
 **/*.png
 data
 logs
+**/pycache
+**/*.pyc
+**/*.tmp
